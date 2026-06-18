@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "x5a237ntsj");
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TelefonosMapfre - Guía de Contactos TSR</title>
@@ -889,7 +882,8 @@
                 contacts: [
                     { type: 'phone', label: 'Centralita', value: '915811220', display: '915 811 220' },
                     { type: 'email', label: 'Correo electrónico', value: 'tsrdesoporte@mapfre.com', display: 'tsrdesoporte@mapfre.com' },
-                    { type: 'app', label: 'Acceso desde Appcol', value: 'Símbolo @', display: 'Símbolo @' }
+                    { type: 'app', label: 'Acceso desde Appcol', value: 'Símbolo @', display: 'Símbolo @' },
+                    { type: 'generator', label: 'Generador de consultas TSR Soporte', value: 'https://gps-tsrdesoporte.github.io/Tsr-Soporte/index.html', display: 'Acceso generador' }
                 ],
                 note: '',
                 showPhoneSubtitle: true
@@ -1018,6 +1012,17 @@
                                 <div style="color: #8b5cf6; font-size: 20px; font-weight: bold;">▶️</div>
                             </div>
                         `;
+                    } else if (contact.type === 'generator') {
+                        contactsHTML += `
+                            <a href="${contact.value}" target="_blank" class="contact-item" style="text-decoration: none;">
+                                <div class="contact-icon" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);">🔧</div>
+                                <div class="contact-details">
+                                    <div class="contact-label">${contact.label}</div>
+                                    <div class="contact-value">${contact.display}</div>
+                                </div>
+                                <div style="color: #f97316; font-size: 20px; font-weight: bold;">↗️</div>
+                            </a>
+                        `;
                     }
                 });
                 
@@ -1078,7 +1083,7 @@
                             <select class="form-input" id="asunto" required onchange="updateFormFields()">
                                 <option value="">Selecciona un asunto...</option>
                                 <option value="Consulta técnica o Coberturas">Consulta técnica o Coberturas</option>
-                                <option value="Solicitud Alta / Baja temporal">Solicitud Alta / Baja temporal</option>
+                                <option value="Solicitud cese temporal de actividad">Solicitud cese temporal de actividad</option>
                                 <option value="Incidencias en importes/ Facturaciones/ Embargos">Incidencias en importes/ Facturaciones/ Embargos</option>
                                 <option value="Gestión de servicios">Gestión de servicios</option>
                                 <option value="Modificar datos personales">Modificar datos personales</option>
@@ -1110,7 +1115,7 @@
             const asunto = document.getElementById('asunto').value;
             const dynamicFields = document.getElementById('dynamicFields');
             
-            if (asunto === 'Solicitud Alta / Baja temporal') {
+            if (asunto === 'Solicitud cese temporal de actividad') {
                 dynamicFields.innerHTML = `
                     <div class="form-group">
                         <label class="form-label">Tipo de Solicitud</label>
@@ -1121,11 +1126,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fecha de Baja</label>
+                        <label class="form-label">Fecha de Inicio</label>
                         <input type="date" class="form-input" id="fechaBaja" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fecha de Alta</label>
+                        <label class="form-label">Fecha de Fin</label>
                         <input type="date" class="form-input" id="fechaAlta" required>
                     </div>
                     <div class="form-group">
@@ -1169,6 +1174,32 @@
                         <textarea class="form-input form-textarea" id="motivoCambio" placeholder="Describe el motivo del cambio..." required></textarea>
                     </div>
                 `;
+            } else if (asunto === 'Modificar datos personales') {
+                dynamicFields.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Datos a Actualizar</label>
+                        <select class="form-input" id="datosActualizar" required>
+                            <option value="">Selecciona los datos a actualizar...</option>
+                            <option value="Teléfono (móvil, urgencias o guardia)">Teléfono (móvil, urgencias o guardia)</option>
+                            <option value="Email">Email</option>
+                            <option value="Dirección">Dirección</option>
+                            <option value="Cuenta bancaria">Cuenta bancaria</option>
+                            <option value="Varios">Varios</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nuevos Datos</label>
+                        <textarea class="form-input form-textarea" id="nuevosDatos" placeholder="Ingresa los nuevos datos..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Para cambios de cuenta bancaria aportar Certificado titularidad</label>
+                        <select class="form-input" id="certificadoTitularidad" required>
+                            <option value="">Selecciona...</option>
+                            <option value="Si, adjunto">Si, adjunto</option>
+                            <option value="No aplica">No aplica</option>
+                        </select>
+                    </div>
+                `;
             } else {
                 // Formulario estándar para otros asuntos
                 dynamicFields.innerHTML = `
@@ -1196,8 +1227,8 @@
             let body = 'Código Profesional: ' + codigoProfesional + '\n';
             let asuntoFinal = '[' + codigoProfesional + '] ' + asuntoSelect;
             
-            // Formulario específico para Solicitud Alta / Baja temporal
-            if (asuntoSelect === 'Solicitud Alta / Baja temporal') {
+            // Formulario específico para Solicitud cese temporal de actividad
+            if (asuntoSelect === 'Solicitud cese temporal de actividad') {
                 const tipoSolicitud = document.getElementById('tipoSolicitud').value;
                 const fechaBaja = document.getElementById('fechaBaja').value;
                 const fechaAlta = document.getElementById('fechaAlta').value;
@@ -1209,8 +1240,8 @@
                 }
                 
                 body += 'Tipo de Solicitud: ' + tipoSolicitud + '\n';
-                body += 'Fecha de Baja: ' + fechaBaja + '\n';
-                body += 'Fecha de Alta: ' + fechaAlta + '\n';
+                body += 'Fecha de Inicio: ' + fechaBaja + '\n';
+                body += 'Fecha de Fin: ' + fechaAlta + '\n';
                 body += 'Motivo: ' + motivo + '\n';
             }
             // Formulario específico para Cambiar Guardia
@@ -1233,6 +1264,21 @@
                 body += 'Zonas: ' + zonas + '\n';
                 body += 'Sustituto Propuesto: ' + sustitutoPropuesto + '\n';
                 body += 'Motivo del Cambio: ' + motivoCambio + '\n';
+            }
+            // Formulario específico para Modificar datos personales
+            else if (asuntoSelect === 'Modificar datos personales') {
+                const datosActualizar = document.getElementById('datosActualizar').value;
+                const nuevosDatos = document.getElementById('nuevosDatos').value;
+                const certificadoTitularidad = document.getElementById('certificadoTitularidad').value;
+                
+                if (!datosActualizar || !nuevosDatos || !certificadoTitularidad) {
+                    alert('Por favor completa todos los campos obligatorios');
+                    return;
+                }
+                
+                body += 'Datos a Actualizar: ' + datosActualizar + '\n';
+                body += 'Nuevos Datos: ' + nuevosDatos + '\n';
+                body += 'Certificado titularidad: ' + certificadoTitularidad + '\n';
             }
             // Formulario estándar para otros asuntos
             else {
